@@ -2,7 +2,7 @@
 Description = DICOM receiver
 
 [Socket]
-ListenStream = 11112
+ListenStream = 11113
 Accept = yes
 
 [Install]
