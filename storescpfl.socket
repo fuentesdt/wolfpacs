@@ -1,0 +1,9 @@
+[Unit]
+Description = DICOM receiver
+
+[Socket]
+ListenStream = 11112
+Accept = yes
+
+[Install]
+WantedBy = sockets.target

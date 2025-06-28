@@ -1,0 +1,36 @@
+
+
+
+setup DICOM server
+====================
+
+
+1) /etc/systemd/system/storescpt1.socket:
+```
+[Unit]
+Description = DICOM receiver
+
+[Socket]
+ListenStream = 4008
+Accept = yes
+
+[Install]
+WantedBy = sockets.target
+```
+
+2) /etc/systemd/system/storescpt1@.service:
+```
+[Unit]
+Description=DIT3 DICOM receiver service
+
+[Service]
+ExecStart=storescp -pm +uf --exec-sync --inetd -od /some/ouput/path
+StandardInput=socket
+User=whatever
+``
+Then 
+/bin/systemctl enable storescp.socket (to start at boot time)
+Or 
+/bin/systemctl start storescp.socket
+/bin/systemctl status storescp.socket
+
