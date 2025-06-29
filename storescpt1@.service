@@ -2,6 +2,6 @@
 Description=DIT3 DICOM receiver service
 
 [Service]
-ExecStart=storescp -pm +uf --exec-sync --inetd -od /home/fuentes/wolfpacs/t1
+ExecStart=storescp -xs -fe .dcm --inetd -od '/home/fuentes/wolfpacs/t1' --exec-on-reception '/home/fuentes/wolfpacs/storeandorganize.sh #p/#f t1'
 StandardInput=socket
 User=fuentes

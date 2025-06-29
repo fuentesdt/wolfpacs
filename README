@@ -1,11 +1,23 @@
+INSTALL
+============
+sudo cp storescp??.socket /etc/systemd/system/
+sudo cp storescp??@.service /etc/systemd/system/
 
+sudo /bin/systemctl start storescpt1.socket
+sudo /bin/systemctl start storescpt2.socket
+sudo /bin/systemctl start storescptc.socket
+sudo /bin/systemctl start storescpfl.socket
 
+sudo /bin/systemctl stop  storescpt1.socket
+sudo /bin/systemctl stop  storescpt2.socket
+sudo /bin/systemctl stop  storescptc.socket
+sudo /bin/systemctl stop  storescpfl.socket
 
 setup DICOM server
 ====================
 
 
-1) /etc/systemd/system/storescpt1.socket:
+1) /etc/systemd/system/storescpt1.socket
 ```
 [Unit]
 Description = DICOM receiver
@@ -18,13 +30,13 @@ Accept = yes
 WantedBy = sockets.target
 ```
 
-2) /etc/systemd/system/storescpt1@.service:
+2) /etc/systemd/system/storescpt1@.service
 ```
 [Unit]
 Description=DIT3 DICOM receiver service
 
 [Service]
-ExecStart=storescp -pm +uf --exec-sync --inetd -od /some/ouput/path
+ExecStart=storescp -pm +uf -fe .dcm -su --exec-sync --inetd -od /some/ouput/path
 StandardInput=socket
 User=whatever
 ``
@@ -33,4 +45,33 @@ Then
 Or 
 /bin/systemctl start storescp.socket
 /bin/systemctl status storescp.socket
+
+
+debug
+==========
+
+storescu -d -v localhost 11112  testdata/*
+
+storescp -xs  -fe .dcm -od '/home/fuentes/wolfpacs/t1' --exec-on-reception '/home/fuentes/wolfpacs/storeandorganize.sh #p/#f t1' 11112
+
+
+old
+==========
+FileConversionScripts/DicomSeriesReadImageWrite.py:  listenerCMD = "storescp -xs -fe .dcm -su  -aet %s --output-directory %s  --exec-on-reception 'echo #f 1>&2' --exec-on-eostudy 'echo  #p' --eostudy-timeout %d %d" % (storescpEXE,AETitle,outputdir,timeout,portnumber)
+
+
+storescp -xs -su -fe .dcm -od '/home/fuentes/wolfpacs/t1' --exec-on-reception 'dcmdump --load-short --print-short --print-filename --search PatientName "/home/fuentes/wolfpacs/t1"' 11112
+
+
+storescp -xs -pm +uf -fe .dcm -su  -od /home/fuentes/wolfpacs/t1 --exec-on-reception 'dcmdump --load-short --print-short --print-filename --search PatientName "/home/fuentes/wolfpacs/t1dicom/incoming/#f"' 11112
+
+/opt/apps/slicer/Slicer-4.10.2-linux-amd64/bin/../bin/storescp with
+', ['4018', '--accept-all', '--output-directory',
+u'/rsrch3/ip/dtfuentes/github/oncopigdata/dicom/incoming', '--exec-sync',
+'--exec-on-reception',
+u'/opt/apps/slicer/Slicer-4.10.2-linux-amd64/bin/../bin/dcmdump --load-short
+--print-short --print-filename --search PatientName
+"/rsrch3/ip/dtfuentes/github/oncopigdata/dicom/incoming/#f"'])
+
+
 
